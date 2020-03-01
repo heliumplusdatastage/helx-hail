@@ -6,7 +6,6 @@ LABEL maintainer "RENCI <info@renci.org>"
 COPY --from=bitnami/java:1.8 /opt/bitnami/java/ /opt/bitnami/java/
 ENV JAVA_HOME="/opt/bitnami/java" \
     PATH="/opt/bitnami/java/bin:$PATH"
-RUN ls /opt/bitnami
 
 # Run as a non-root user.
 COPY ./entrypoint.sh /
@@ -19,7 +18,7 @@ RUN useradd -m -s /bin/bash -N -u $UID $USER && \
 USER $USER
 WORKDIR $HOME
 
-# Install Spark
+# Install Spark - using 2.4.1 for Hail compatibility.
 ENV SPARK_VERSION 2.4.1
 RUN wget --quiet https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz && \
     tar xvzf spark-${SPARK_VERSION}-bin-hadoop2.7.tgz && \

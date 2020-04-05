@@ -9,7 +9,8 @@ USER root
 
 # Install nb_conda in the base environment.
 RUN conda install nb_conda_kernels ipykernel && \
-        python -m IPython kernel install --prefix=/usr/local --name "Python3.7"
+        conda install --quiet --yes -c conda-forge minio ipyleaflet seaborn && \
+	python -m IPython kernel install --prefix=/usr/local --name "Python3.7"
 
 # you can add additional libraries you want conda to install by listing them below the first line and ending with "&& \"
 RUN conda create --quiet --yes -p $CONDA_DIR/envs/$conda_env python=$py_ver ipykernel ipython && \
@@ -22,10 +23,10 @@ RUN $CONDA_DIR/envs/${conda_env}/bin/python -m ipykernel install --user --name=$
 
 COPY core-site.xml $SPARK_HOME/conf
 COPY alluxio-2.2.0-client.jar $SPARK_HOME/jars
-RUN wget --timestamping \
+RUN wget --quiet --timestamping \
         https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/2.7.3/hadoop-aws-2.7.3.jar \
         -P $SPARK_HOME/jars/ && \
-        wget --timestamping \
+        wget --quiet --timestamping \
         https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk/1.7.4/aws-java-sdk-1.7.4.jar \
         -P $SPARK_HOME/jars/
 
@@ -41,7 +42,9 @@ RUN . $CONDA_DIR/etc/profile.d/conda.sh && \
         conda install nb_conda_kernels ipykernel && \
         python -m IPython kernel install --prefix=/usr/local --name "Python3.6"
 
-RUN conda install --quiet --yes \
+RUN conda install --quiet --yes -c conda-forge ipyleaflet && \
+    conda install --quiet --yes seaborn && \
+    conda install --quiet --yes \
         'notebook=6.0.3' \
         'jupyterhub=1.1.0' \
         'jupyterlab=2.0.1' && \

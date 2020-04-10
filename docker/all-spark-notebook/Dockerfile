@@ -4,9 +4,9 @@ FROM jupyter/all-spark-notebook:dc9744740e12
 USER root
 
 # Start in the default Python3.7 environment.
-# Install nb_conda in the base environment. Minio needs to be at 5.0.6 for Python 3.7
-#        conda install --quiet --yes -c conda-forge && \
-
+# Install nb_conda in the base environment.
+# Add dependencies for connectivity to other systems and visualization:
+#   Minio needs to be at 5.0.6 for Python 3.7
 RUN conda install nb_conda_kernels ipykernel && \
 	python -m IPython kernel install --prefix=/usr/local --name "Python3.7" && \
 	python -m pip install ipyleaflet seaborn minio==5.0.6
@@ -19,47 +19,13 @@ RUN wget --quiet --timestamping \
         -P $SPARK_HOME/jars/ && \
         wget --quiet --timestamping \
         https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk/1.7.4/aws-java-sdk-1.7.4.jar \
-        -P $SPARK_HOME/jars/
-
-# Install a 3.6 environment.
-# name your environment and choose python 3.x version
-ARG conda_env=python36
-ARG py_ver=3.6
-
-# you can add additional libraries you want conda to install by listing them below the first line and ending with "&& \"
-RUN conda create --quiet --yes -p $CONDA_DIR/envs/$conda_env python=$py_ver ipykernel ipython && \
-    conda clean --all -f -y
-
-# create Python 3.x environment and link it to jupyter
-RUN $CONDA_DIR/envs/${conda_env}/bin/python -m ipykernel install --user --name=${conda_env} && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
-
-# prepend conda environment to path
-ENV PATH $CONDA_DIR/envs/${conda_env}/bin:$PATH
-
-# if you want this environment to be the default one, uncomment the following line:
-ENV CONDA_DEFAULT_ENV ${conda_env}
-
-RUN . $CONDA_DIR/etc/profile.d/conda.sh && \
-        conda deactivate && \
-        conda activate $conda_env && \
-        conda install nb_conda_kernels ipykernel && \
-        python -m IPython kernel install --prefix=/usr/local --name "Python3.6"
-
-RUN conda install --quiet --yes -c conda-forge ipyleaflet && \
-    conda install --quiet --yes seaborn && \
-    conda install --quiet --yes \
-        'notebook=6.0.3' \
-        'jupyterhub=1.1.0' \
-        'jupyterlab=2.0.1' && \
-        conda clean --all -f -y && \
-        npm cache clean --force && \
-        conda install --quiet --yes -c conda-forge minio && \
-        jupyter notebook -y --generate-config && \
-        rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-        rm -rf /home/$NB_USER/.cache/yarn && \
-        fix-permissions $CONDA_DIR && \
-        fix-permissions /home/$NB_USER
+        -P $SPARK_HOME/jars/ && \
+        git clone https://github.com/stevencox/blackbalsam.git $HOME/blackbalsam && \
+        export PYTHONPATH=$PYTHONPATH:$HOME/blackbalsam && \
+        pip install --upgrade tensorflow keras gensim # sklearn numpy torch
+#        git clone https://github.com/thunlp/OpenKE.git && \
+#        cd  OpenKE/openke && \
+#        ./make.sh && \
+#        cd .. && \
 
 USER $NB_UID

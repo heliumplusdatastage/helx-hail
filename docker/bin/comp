@@ -26,7 +26,10 @@ build () {
         echo "Version file .ver not found."
         echo "Please check for or re-create bin/.ver"
     fi
-    docker build --no-cache $mod -t $repo/$mod:latest -t $repo/$mod:$newversion
+    docker build --no-cache $mod \
+	   --file $mod/Dockerfile \
+	   -t $repo/$mod:latest \
+	   -t $repo/$mod:$newversion
 }
 push () {
     local mod=$1

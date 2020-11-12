@@ -3,18 +3,20 @@ FROM heliumdatastage/conda-layer
 # ======================================= Hail ======================================
 # https://hail.is/docs/0.2/getting_started.html
 #
+
 RUN . ~/.bashrc && \
     echo $PATH && \
     conda update --yes --freeze-installed -n base -c defaults conda && \
     conda init && \
-    conda create --yes -n hail python==3.7 && \
+    conda create --yes -n hail python==3.7 ipykernel && \
     conda activate hail && \
     pip install hail && \
     conda clean -afy \
     && find /opt/conda/ -follow -type f -name '*.a' -delete \
     && find /opt/conda/ -follow -type f -name '*.pyc' -delete \
     && find /opt/conda/ -follow -type f -name '*.js.map' -delete \
-    && find /opt/conda/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete
+    && find /opt/conda/lib/python*/site-packages/bokeh/server/static -follow -type f -name '*.js' ! -name '*.min.js' -delete \
+    && conda env list
 
 COPY ./entrypoint.sh /
 RUN chmod +x /entrypoint.sh

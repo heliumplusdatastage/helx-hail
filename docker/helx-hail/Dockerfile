@@ -1,4 +1,4 @@
-FROM heliumdatastage/conda-layer
+FROM helxplatform/conda-layer
 
 # ======================================= Hail ======================================
 # https://hail.is/docs/0.2/getting_started.html

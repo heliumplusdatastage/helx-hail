@@ -12,7 +12,7 @@ bin/comp push helx-hail
 
 ### Run
 ```
-docker run --rm --name helx-hail -p 8000:8000 heliumdatastage/helx-hail
+docker run --rm --name helx-hail -p 8000:8000 helxplatform/helx-hail
 ```
 Start a Hail-Python3 notebook and run:
 ```

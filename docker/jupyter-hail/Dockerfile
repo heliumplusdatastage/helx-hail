@@ -30,7 +30,7 @@ RUN wget --quiet https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/sp
 COPY ./requirements.txt /home/$USER/requirements.txt
 RUN python3 -m venv hail && \
     . hail/bin/activate && \
-    pip install --upgrade pip && \
+    pip install --upgrade pip wheel && \
     pip install -r /home/$USER/requirements.txt
 
 # Configure Jupyter port

@@ -33,7 +33,8 @@ pipeline {
                     sh '''
                     echo build
                     cd docker/conda-layer
-                    docker build -t helxplatform/conda-layer:$BRANCH_NAME .
+                    python xform.py Dockerfile.jinja $BRANCH_NAME
+                    docker build -t helxplatform/conda-layer:$BRANCH_NAME -f Dockerfile.$BRANCH_NAME .
                     '''
                 }
             }

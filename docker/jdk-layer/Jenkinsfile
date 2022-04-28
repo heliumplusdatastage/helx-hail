@@ -61,6 +61,11 @@ pipeline {
                     '''
                 }
             }
+            post {
+                success {
+                   build propagate: false, job: "hail-conda-layer/${env.BRANCH_NAME}"
+                }
+            }
         }
     }
 }

@@ -32,9 +32,9 @@ pipeline {
                 container('agent-docker') {
                     sh '''
                     echo build
-                    cd docker/conda-layer
+                    cd docker/helx-hail
                     python ../xform.py Dockerfile.jinja $BRANCH_NAME
-                    docker build -t helxplatform/conda-layer:$BRANCH_NAME -f Dockerfile.$BRANCH_NAME .
+                    docker build -t helxplatform/helx-hail:$BRANCH_NAME -f Dockerfile.$BRANCH_NAME .
                     '''
                 }
             }
@@ -58,7 +58,7 @@ pipeline {
                     sh '''
                     echo publish
                     echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin $DOCKER_REGISTRY
-                    docker push helxplatform/conda-layer:$BRANCH_NAME
+                    docker push helxplatform/helx-hail:$BRANCH_NAME
                     '''
                 }
             }

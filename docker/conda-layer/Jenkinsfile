@@ -62,6 +62,11 @@ pipeline {
                     '''
                 }
             }
+            post {
+                success {
+                   build propagate: false, job: "hail-helx/${env.BRANCH_NAME}"
+                }
+            }
         }
     }
 }

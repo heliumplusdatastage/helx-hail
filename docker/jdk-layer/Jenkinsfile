@@ -55,7 +55,7 @@ spec:
                                          --context ./docker/jdk-layer/ \
                                          --verbosity debug \
                                          --destination helxplatform/jdk-layer:develop-v0.0.8 \
-                                         --destination helxplatform/nginx:develop-latest
+                                         --destination helxplatform/jdk-layer:develop-latest
 
                         '''
                 }

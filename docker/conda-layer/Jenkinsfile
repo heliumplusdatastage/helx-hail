@@ -9,9 +9,9 @@ metadata:
 spec:
   containers:
   - name: jnlp
-    workingDir: /tmp/jenkins
+    workingDir: /home/jenkins/agent/
   - name: kaniko
-    workingDir: /tmp/jenkins
+    workingDir: /home/jenkins/agent/
     image: gcr.io/kaniko-project/executor:debug
     imagePullPolicy: Always
     resources:
@@ -22,7 +22,7 @@ spec:
       limits:
         cpu: "500m"
         memory: "2048Mi"
-        ephemeral-storage: "4096Mi"
+        ephemeral-storage: "2048Mi"
     command:
     - /busybox/cat
     tty: true

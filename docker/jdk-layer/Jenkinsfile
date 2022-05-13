@@ -22,7 +22,7 @@ spec:
       limits:
         cpu: "500m"
         memory: "2048Mi"
-        ephemeral-storage: "512Mi
+        ephemeral-storage: "512Mi"
     command:
     - /busybox/cat
     tty: true

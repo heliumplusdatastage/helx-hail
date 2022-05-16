@@ -1,67 +1,89 @@
 pipeline {
-    agent {
-        kubernetes {
-            cloud 'kubernetes'
-            yaml '''
-              apiVersion: v1
-              kind: Pod
-              spec:
-                containers:
-                - name: agent-docker
-                  image: wateim/jenkins-agent:latest
-                  command: 
-                  - cat
-                  tty: true
-                  volumeMounts:
-                    - name: dockersock
-                      mountPath: "/var/run/docker.sock"
-                volumes:
-                - name: dockersock
-                  hostPath:
-                    path: /var/run/docker.sock 
-            '''
+  agent {
+    kubernetes {
+        label 'kaniko-build-agent'
+        yaml """
+kind: Pod
+metadata:
+  name: kaniko
+spec:
+  containers:
+  - name: jnlp
+    workingDir: /home/jenkins/agent/
+  - name: kaniko
+    workingDir: /home/jenkins/agent/
+    image: gcr.io/kaniko-project/executor:debug
+    imagePullPolicy: Always
+    resources:
+      requests:
+        cpu: "512m"
+        memory: "1024Mi"
+        ephemeral-storage: "1Gi"
+      limits:
+        cpu: "1024m"
+        memory: "2048Mi"
+        ephemeral-storage: "2Gi"
+    command:
+    - /busybox/cat
+    tty: true
+    volumeMounts:
+    - name: jenkins-docker-cfg
+      mountPath: /kaniko/.docker
+  volumes:
+  - name: jenkins-docker-cfg
+    projected:
+      sources:
+      - secret:
+          name: rencibuild-imagepull-secret
+          items:
+            - key: .dockerconfigjson
+              path: config.json
+"""
         }
     }
     stages {
         stage('Build') {
             environment {
+                PATH = "/busybox:/kaniko:$PATH"
                 DOCKERHUB_CREDS = credentials("${env.REGISTRY_CREDS_ID_STR}")
                 DOCKER_REGISTRY = "${env.DOCKER_REGISTRY}"
             }
             steps {
-                container('agent-docker') {
-                    sh '''
-                    echo build
-                    cd docker/helx-hail
-                    python ../xform.py Dockerfile.jinja $BRANCH_NAME
-                    docker build -t helxplatform/helx-hail:$BRANCH_NAME -f Dockerfile.$BRANCH_NAME .
-                    '''
+                container(name: 'kaniko', shell: '/busybox/sh') {
+                    sh '''#!/busybox/sh
+                        /kaniko/executor --dockerfile ./docker/helx-hail/Dockerfile \
+                                         --context ./docker/helx-hail/ \
+                                         --verbosity debug \
+                                         --destination helxplatform/helx-hail:develop-v0.0.8 \
+                                         --destination helxplatform/helx-hail:develop-latest
+
+                        '''
                 }
             }
         }
-        stage('Test') {
-            steps {
-                container('agent-docker') {
-                    sh '''
-                    echo test
-                    '''
-                }
-            }
-        }
-        stage('Publish') {
-            environment {
-                DOCKERHUB_CREDS = credentials("${env.REGISTRY_CREDS_ID_STR}")
-                DOCKER_REGISTRY = "${env.DOCKER_REGISTRY}"
-            }
-            steps {
-                container('agent-docker') {
-                    sh '''
-                    echo publish
-                    echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin $DOCKER_REGISTRY
-                    docker push helxplatform/helx-hail:$BRANCH_NAME
-                    '''
-                }
-            }
-        }
+        //stage('Test') {
+        //    steps {
+        //        container('agent-docker') {
+        //            sh '''
+        //            echo test
+        //            '''
+        //        }
+        //    }
+        //}
+        //stage('Publish') {
+        //    environment {
+        //        DOCKERHUB_CREDS = credentials("${env.REGISTRY_CREDS_ID_STR}")
+        //        DOCKER_REGISTRY = "${env.DOCKER_REGISTRY}"
+        //    }
+        //    steps {
+        //        container('agent-docker') {
+        //            sh '''
+        //            echo publish
+        //            echo $DOCKERHUB_CREDS_PSW | docker login -u $DOCKERHUB_CREDS_USR --password-stdin $DOCKER_REGISTRY
+        //            docker push helxplatform/nginx:$BRANCH_NAME
+        //            '''
+        //        }
+        //    }
+        //}
     }
 }

@@ -11,7 +11,7 @@ RUN . ~/.bashrc && \
     conda activate hail && \
     pip install --upgrade pip && \
     pip install hail && \
-    pip purge cache && \
+    pip cache purge && \
     conda clean -afy \
     && find /opt/conda/ -follow -type f -name '*.a' -delete \
     && find /opt/conda/ -follow -type f -name '*.pyc' -delete \

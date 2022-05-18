@@ -53,7 +53,6 @@ spec:
                     sh '''#!/busybox/sh
                         /kaniko/executor --dockerfile ./docker/helx-hail/Dockerfile \
                                          --context ./docker/helx-hail/ \
-                                        # --verbosity debug \
                                          --destination helxplatform/helx-hail:develop-v0.0.8 \
                                          --destination helxplatform/helx-hail:develop-latest
 

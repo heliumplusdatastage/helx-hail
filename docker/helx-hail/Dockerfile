@@ -9,7 +9,9 @@ RUN . ~/.bashrc && \
     conda init && \
     conda create --yes -n hail python==3.7 && \
     conda activate hail && \
+    pip install --upgrade pip && \
     pip install hail && \
+    pip purge cache && \
     conda clean -afy \
     && find /opt/conda/ -follow -type f -name '*.a' -delete \
     && find /opt/conda/ -follow -type f -name '*.pyc' -delete \

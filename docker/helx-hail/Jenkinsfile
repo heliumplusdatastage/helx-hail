@@ -34,7 +34,7 @@ spec:
     image: python:slim-bullseye
     imagePullPolicy: Always
     command:
-    - /busybox/cat
+    - /bin/cat
     tty: true
   - name: crane
     workingDir: /tmp/jenkins

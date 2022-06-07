@@ -54,9 +54,10 @@ spec:
         REGISTRY = "${env.DOCKER_REGISTRY}"
         REG_OWNER="helxplatform"
         REG_APP="jdk-layer"
+        COMMIT_HASH="${sh(script:"git rev-parse --short HEAD", returnStdout: true).trim()}"
         IMAGE_NAME="${REG_OWNER}/${REG_APP}"
-        TAG1="$BRANCH_NAME-$BUILD_NUMBER"
-        TAG2="$BRANCH_NAME-latest"
+        TAG1="$BRANCH_NAME"
+        TAG2="$COMMIT_HASH"
     }
     stages {
         stage('Build') {
@@ -71,7 +72,6 @@ spec:
                                          --destination $IMAGE_NAME:$TAG1 \
                                          --destination $IMAGE_NAME:$TAG2 \
                                          --tarPath image.tar
-
                         '''
                 }
             }

@@ -71,25 +71,24 @@ spec:
             steps {
                 container(name: 'python', shell: '/bin/bash') {
                    sh '''
+                    echo "Build stage"
+		    echo "Preparing Dockerfile . . ."
                     cd docker/helx-hail
                     python ../xform.py Dockerfile.jinja $BRANCH_NAME
-
-                   '''
+                    cd ../..
+                    '''
                 }
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     sh '''#!/busybox/sh
-                        echo "Build stage"
-                        cd docker/helx-hail
-                        python ../xform.py Dockerfile.jinja $BRANCH_NAME
-			cd ../..
-                        /kaniko/executor --dockerfile ./docker/helx-hail/Dockerfile.$BRANCH_NAME \
-                                         --context ./docker/helx-hail/ \
-                                         --verbosity debug \
-                                         --no-push \
-                                         --destination $IMAGE_NAME:$TAG1 \
-                                         --destination $IMAGE_NAME:$TAG2 \
-                                         --tarPath image.tar
-                        '''
+		    echo "Building . . ."
+                    /kaniko/executor --dockerfile ./docker/helx-hail/Dockerfile.$BRANCH_NAME \
+                                     --context ./docker/helx-hail/ \
+                                     --verbosity debug \
+                                     --no-push \
+                                     --destination $IMAGE_NAME:$TAG1 \
+                                     --destination $IMAGE_NAME:$TAG2 \
+                                     --tarPath image.tar
+                    '''
                 }
             }
         }

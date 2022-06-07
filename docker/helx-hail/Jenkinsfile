@@ -31,7 +31,7 @@ spec:
       mountPath: /kaniko/.docker
   - name: python
     workingDir: /tmp/jenkins
-    image: python:3.10.5-slim-bullseye
+    image: python:slim-bullseye
     imagePullPolicy: Always
     command:
     - /busybox/cat

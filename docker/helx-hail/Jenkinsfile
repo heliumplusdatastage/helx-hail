@@ -29,6 +29,13 @@ spec:
     volumeMounts:
     - name: jenkins-docker-cfg
       mountPath: /kaniko/.docker
+  - name: python
+    workingDir: /tmp/jenkins
+    image: python:3.10.5-slim-bullseye
+    imagePullPolicy: Always
+    command:
+    - /busybox/cat
+    tty: true
   - name: crane
     workingDir: /tmp/jenkins
     image: gcr.io/go-containerregistry/crane:debug
@@ -62,6 +69,13 @@ spec:
     stages {
         stage('Build') {
             steps {
+                container(name: 'python', shell: '/bin/bash') {
+                   sh '''
+                    cd docker/helx-hail
+                    python ../xform.py Dockerfile.jinja $BRANCH_NAME
+
+                   '''
+                }
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     sh '''#!/busybox/sh
                         echo "Build stage"

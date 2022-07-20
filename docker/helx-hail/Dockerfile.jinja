@@ -1,4 +1,4 @@
-FROM helxplatform/conda-layer
+FROM helxplatform/conda-layer:{{tag}}
 
 # ======================================= Hail ======================================
 # https://hail.is/docs/0.2/getting_started.html
@@ -9,9 +9,7 @@ RUN . ~/.bashrc && \
     conda init && \
     conda create --yes -n hail python==3.7 && \
     conda activate hail && \
-    pip install --upgrade pip && \
     pip install hail && \
-    pip cache purge && \
     conda clean -afy \
     && find /opt/conda/ -follow -type f -name '*.a' -delete \
     && find /opt/conda/ -follow -type f -name '*.pyc' -delete \
